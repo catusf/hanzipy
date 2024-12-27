@@ -41,7 +41,9 @@ def build_tree_string(root, character):
         string += "%s%s" % (pre, node.name) + "\n"
     string = string.strip()
 
-    return "" if string == character else string
+    return string
+
+    # return "" if string == character else string
 
 
 class HanziDecomposer:
@@ -256,16 +258,17 @@ class HanziDecomposer:
         else:
             components = self.get_components(character)
 
-            append_if_not_exists(final_array, character)  # Additional
-
             if len(components) == 2:
+                append_if_not_exists(final_array, character)  # Additional
                 for child in components:
                     extend_if_not_exists(final_array, self.tree_radical_up_decomposition(child, Node(child, parent=tree)))  # fmt: skip
             elif len(components) == 1:
-                Node(components[0], parent=tree)
-                append_if_not_exists(final_array, components[0])
+                if components[0] != character:
+                    Node(components[0], parent=tree)
+                    append_if_not_exists(final_array, components[0])
             else:
                 append_if_not_exists(final_array, character)
+                print('Error ***')
 
         return self.replace_numbers(final_array)
 
@@ -278,13 +281,14 @@ class HanziDecomposer:
         else:
             components = self.get_components(character)
 
-            final_array.append(character)  # Also add the containing components
             if len(components) == 2:
+                final_array.append(character)  # Also add the containing components
                 for j in range(2):
                     extend_if_not_exists(final_array, self.radical_up_decomposition(components[j]))  # fmt: skip
                     # final_array.extend(self.radical_up_decomposition(components[j]))
             elif len(components) == 1:
-                append_if_not_exists(final_array, components[0])
+                if components[0] != character:
+                    append_if_not_exists(final_array, components[0])
             else:
                 append_if_not_exists(final_array, character)
                 # final_array.append(character)
